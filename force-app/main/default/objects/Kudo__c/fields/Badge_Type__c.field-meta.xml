@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Badge_Type__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Badge Type</label>
+    <referenceTo>Badge_Type__c</referenceTo>
+    <relationshipLabel>Kudos</relationshipLabel>
+    <relationshipName>Kudos</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>
