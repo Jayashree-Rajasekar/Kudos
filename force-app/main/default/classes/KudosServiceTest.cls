@@ -107,6 +107,35 @@ private class KudosServiceTest {
   }
 
   @isTest
+  static void testGiveKudoBlockedWhenDisabledViaSetting() {
+    User giver = [SELECT Id FROM User WHERE LastName = 'Giver' LIMIT 1];
+    User recipient = [SELECT Id FROM User WHERE LastName = 'Recipient' LIMIT 1];
+    Boolean threw = false;
+
+    Kudos_Settings__c settings = Kudos_Settings__c.getOrgDefaults();
+    settings.Can_Give_Kudos__c = false;
+    upsert settings;
+
+    System.runAs(giver) {
+      Badge_Type__c badge = createBadge();
+      try {
+        KudosService.giveKudo(recipient.Id, badge.Id, 'Nice!');
+      } catch (AuraHandledException e) {
+        threw = true;
+        System.assertEquals(
+          'Giving kudos is currently disabled for your account.',
+          e.getMessage()
+        );
+      }
+    }
+
+    System.assert(
+      threw,
+      'Should block giving kudos when Can_Give_Kudos__c is disabled'
+    );
+  }
+
+  @isTest
   static void testDailyLimitEnforced() {
     User giver = [SELECT Id FROM User WHERE LastName = 'Giver' LIMIT 1];
     User recipient = [SELECT Id FROM User WHERE LastName = 'Recipient' LIMIT 1];
