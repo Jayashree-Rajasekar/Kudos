@@ -1,0 +1,58 @@
+<template>
+  <lightning-card title="Give Kudos" icon-name="standard:groups">
+    <div class="slds-p-around_medium">
+      <lightning-record-picker
+        label="Recipient"
+        placeholder="Search people..."
+        object-api-name="User"
+        onchange={handleRecipientChange}
+      ></lightning-record-picker>
+
+      <lightning-combobox
+        label="Badge Type"
+        value={badgeTypeId}
+        options={badgeOptions}
+        onchange={handleBadgeChange}
+        class="slds-m-top_small"
+      ></lightning-combobox>
+
+      <lightning-textarea
+        label="Message"
+        value={message}
+        onchange={handleMessageChange}
+        class="slds-m-top_small"
+      ></lightning-textarea>
+
+      <lightning-button
+        label="Give Kudo"
+        variant="brand"
+        disabled={isSubmitDisabled}
+        onclick={handleSubmit}
+        class="slds-m-top_small"
+      ></lightning-button>
+    </div>
+  </lightning-card>
+
+  <lightning-card
+    title="Recent Kudos"
+    icon-name="standard:feed"
+    class="slds-m-top_medium"
+  >
+    <ul class="slds-p-horizontal_medium">
+      <template for:each={kudos} for:item="kudo">
+        <li key={kudo.id} class="slds-box slds-m-bottom_small">
+          <p>
+            <strong>{kudo.giverName}</strong> gave
+            <strong>{kudo.recipientName}</strong> a {kudo.badgeName} kudo
+          </p>
+          <p>{kudo.message}</p>
+        </li>
+      </template>
+      <template if:true={hasNoKudos}>
+        <li class="slds-p-around_medium">
+          No kudos yet — be the first to give one!
+        </li>
+      </template>
+    </ul>
+  </lightning-card>
+</template>
