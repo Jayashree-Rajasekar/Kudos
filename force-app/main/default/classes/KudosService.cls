@@ -34,7 +34,15 @@ public with sharing class KudosService {
         throw new KudosLimitException('You cannot give a kudo to yourself.');
       }
 
-      Integer maxPerDay = getMaxKudosPerDay();
+      Kudos_Settings__c settings = Kudos_Settings__c.getInstance();
+
+      if (!settings.Can_Give_Kudos__c) {
+        throw new KudosLimitException(
+          'Giving kudos is currently disabled for your account.'
+        );
+      }
+
+      Integer maxPerDay = getMaxKudosPerDay(settings);
       Integer givenToday = [
         SELECT COUNT()
         FROM Kudo__c
@@ -163,8 +171,7 @@ public with sharing class KudosService {
     }
   }
 
-  private static Integer getMaxKudosPerDay() {
-    Kudos_Settings__c settings = Kudos_Settings__c.getInstance();
+  private static Integer getMaxKudosPerDay(Kudos_Settings__c settings) {
     return settings.Max_Kudos_Per_Day__c != null
       ? Integer.valueOf(settings.Max_Kudos_Per_Day__c)
       : 5;
