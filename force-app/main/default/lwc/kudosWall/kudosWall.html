@@ -1,58 +1,60 @@
 <template>
-  <lightning-card title="Give Kudos" icon-name="standard:groups">
-    <div class="slds-p-around_medium">
-      <lightning-record-picker
-        label="Recipient"
-        placeholder="Search people..."
-        object-api-name="User"
-        onchange={handleRecipientChange}
-      ></lightning-record-picker>
+  <div class="kudos-header">
+    <h2>🎉 Give Kudos</h2>
+    <p>Recognize a teammate for great work</p>
+  </div>
 
-      <lightning-combobox
-        label="Badge Type"
-        value={badgeTypeId}
-        options={badgeOptions}
-        onchange={handleBadgeChange}
-        class="slds-m-top_small"
-      ></lightning-combobox>
+  <div class="compose-card">
+    <lightning-record-picker
+      label="Recipient"
+      placeholder="Search people..."
+      object-api-name="User"
+      onchange={handleRecipientChange}
+    ></lightning-record-picker>
 
-      <lightning-textarea
-        label="Message"
-        value={message}
-        onchange={handleMessageChange}
-        class="slds-m-top_small"
-      ></lightning-textarea>
+    <lightning-combobox
+      label="Badge Type"
+      value={badgeTypeId}
+      options={badgeOptions}
+      onchange={handleBadgeChange}
+      class="slds-m-top_small"
+    ></lightning-combobox>
 
-      <lightning-button
-        label="Give Kudo"
-        variant="brand"
-        disabled={isSubmitDisabled}
-        onclick={handleSubmit}
-        class="slds-m-top_small"
-      ></lightning-button>
-    </div>
-  </lightning-card>
+    <lightning-textarea
+      label="Message"
+      value={message}
+      onchange={handleMessageChange}
+      class="slds-m-top_small"
+    ></lightning-textarea>
 
-  <lightning-card
-    title="Recent Kudos"
-    icon-name="standard:feed"
-    class="slds-m-top_medium"
-  >
-    <ul class="slds-p-horizontal_medium">
-      <template for:each={kudos} for:item="kudo">
-        <li key={kudo.id} class="slds-box slds-m-bottom_small">
-          <p>
+    <lightning-button
+      label="Give Kudo"
+      variant="brand"
+      disabled={isSubmitDisabled}
+      onclick={handleSubmit}
+      class="slds-m-top_small"
+    ></lightning-button>
+  </div>
+
+  <div class="feed">
+    <template for:each={kudos} for:item="kudo">
+      <div key={kudo.id} class="feed-item">
+        <div class="avatar">{kudo.giverInitials}</div>
+        <div class="feed-body">
+          <div class="feed-meta">
             <strong>{kudo.giverName}</strong> gave
             <strong>{kudo.recipientName}</strong> a {kudo.badgeName} kudo
-          </p>
-          <p>{kudo.message}</p>
-        </li>
-      </template>
-      <template if:true={hasNoKudos}>
-        <li class="slds-p-around_medium">
-          No kudos yet — be the first to give one!
-        </li>
-      </template>
-    </ul>
-  </lightning-card>
+            <template if:true={kudo.tierLabel}>
+              <span class="tier-pill">{kudo.tierIcon} {kudo.tierLabel}</span>
+            </template>
+          </div>
+          <p class="feed-message">{kudo.message}</p>
+        </div>
+      </div>
+    </template>
+
+    <template if:true={hasNoKudos}>
+      <div class="empty-state">No kudos yet — be the first to give one! 🎉</div>
+    </template>
+  </div>
 </template>

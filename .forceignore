@@ -12,3 +12,8 @@ package.xml
 **/__tests__/**
 
 node_modules/
+
+# Full Profiles/TransactionSecurityPolicies aren't portable package
+# source - use Permission Sets instead. See Kudos_User / Kudos_Admin.
+**/profiles/**
+**/transactionSecurityPolicies/**

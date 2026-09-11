@@ -191,7 +191,7 @@ private class KudosServiceTest {
   static void testGetRecentKudosReturnsGivenKudo() {
     User giver = [SELECT Id FROM User WHERE LastName = 'Giver' LIMIT 1];
     User recipient = [SELECT Id FROM User WHERE LastName = 'Recipient' LIMIT 1];
-    List<Kudo__c> results;
+    List<KudosService.KudoWallItem> results;
 
     System.runAs(giver) {
       Badge_Type__c badge = createBadge();
@@ -207,6 +207,42 @@ private class KudosServiceTest {
       results.size(),
       'The kudo just given should appear in the recent list'
     );
-    System.assertEquals('Great teamwork!', results[0].Message__c);
+    System.assertEquals('Great teamwork!', results[0].message);
+    System.assertEquals(
+      'Bronze',
+      results[0].tierLabel,
+      'A recipient with fewer than 50 points should resolve to the Bronze tier'
+    );
+  }
+
+  @isTest
+  static void testGetRecentKudosResolvesHigherTierAfterMorePoints() {
+    User giver = [SELECT Id FROM User WHERE LastName = 'Giver' LIMIT 1];
+    User recipient = [SELECT Id FROM User WHERE LastName = 'Recipient' LIMIT 1];
+    List<KudosService.KudoWallItem> results;
+
+    Kudos_Settings__c settings = Kudos_Settings__c.getOrgDefaults();
+    settings.Max_Kudos_Per_Day__c = 10;
+    upsert settings;
+
+    System.runAs(giver) {
+      Badge_Type__c badge = new Badge_Type__c(
+        Name = 'Big Badge',
+        Points_Value__c = 60,
+        Active__c = true
+      );
+      insert badge;
+      KudosService.giveKudo(recipient.Id, badge.Id, 'Huge win!');
+
+      Test.startTest();
+      results = KudosService.getRecentKudos(10);
+      Test.stopTest();
+    }
+
+    System.assertEquals(
+      'Silver',
+      results[0].tierLabel,
+      'A recipient with 60 points should resolve to the Silver tier'
+    );
   }
 }

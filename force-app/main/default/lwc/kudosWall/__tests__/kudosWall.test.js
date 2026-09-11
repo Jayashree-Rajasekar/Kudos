@@ -17,11 +17,14 @@ const getActiveBadgeTypesAdapter =
 
 const MOCK_KUDOS = [
   {
-    Id: "a01000000000001",
-    Message__c: "Great job on the release!",
-    Recipient__r: { Name: "Jamie Recipient" },
-    Giver__r: { Name: "Alex Giver" },
-    Badge_Type__r: { Name: "Team Player", Icon_Name__c: "utility:groups" }
+    id: "a01000000000001",
+    message: "Great job on the release!",
+    recipientName: "Jamie Recipient",
+    giverName: "Alex Giver",
+    badgeName: "Team Player",
+    badgeIcon: "utility:groups",
+    tierLabel: "Bronze",
+    tierIcon: "🥉"
   }
 ];
 
@@ -42,16 +45,20 @@ describe("c-kudos-wall", () => {
     jest.clearAllMocks();
   });
 
-  it("renders the recent kudos returned by the wire adapter", () => {
+  it("renders the recent kudos returned by the wire adapter, including the tier pill", () => {
     const element = createElement("c-kudos-wall", { is: KudosWall });
     document.body.appendChild(element);
 
     getRecentKudosAdapter.emit(MOCK_KUDOS);
 
     return Promise.resolve().then(() => {
-      const items = element.shadowRoot.querySelectorAll("li.slds-box");
+      const items = element.shadowRoot.querySelectorAll(".feed-item");
       expect(items.length).toBe(1);
       expect(items[0].textContent).toContain("Great job on the release!");
+      expect(items[0].textContent).toContain("Bronze");
+
+      const avatar = element.shadowRoot.querySelector(".avatar");
+      expect(avatar.textContent).toBe("AG");
     });
   });
 

@@ -19,12 +19,15 @@ export default class KudosWall extends LightningElement {
   wiredKudos(result) {
     this.wiredKudosResult = result;
     if (result.data) {
-      this.kudos = result.data.map((k) => ({
-        id: k.Id,
-        message: k.Message__c,
-        recipientName: k.Recipient__r ? k.Recipient__r.Name : "",
-        giverName: k.Giver__r ? k.Giver__r.Name : "",
-        badgeName: k.Badge_Type__r ? k.Badge_Type__r.Name : ""
+      this.kudos = result.data.map((item) => ({
+        id: item.id,
+        message: item.message,
+        recipientName: item.recipientName,
+        giverName: item.giverName,
+        badgeName: item.badgeName,
+        tierLabel: item.tierLabel,
+        tierIcon: item.tierIcon,
+        giverInitials: this.getInitials(item.giverName)
       }));
     } else if (result.error) {
       this.showToast("Error", this.reduceError(result.error), "error");
@@ -83,6 +86,18 @@ export default class KudosWall extends LightningElement {
     } finally {
       this.isSubmitting = false;
     }
+  }
+
+  getInitials(name) {
+    if (!name) {
+      return "";
+    }
+    return name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("");
   }
 
   showToast(title, message, variant) {
